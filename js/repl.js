@@ -44,6 +44,9 @@ class ReplJS{
         this.MACHINE_INFO = undefined;
         this.PROCESSOR = undefined;
 
+        //special check for "Red Vision" version of Micropython
+        this.REDVISION = false;
+
         // Used to stop interaction with the RP2040
         this.BUSY = false;
         this.RUN_BUSY = false; //used to distinguish that we are in the RUN of a user program vs other BUSY.
@@ -1228,6 +1231,11 @@ class ReplJS{
                     this.PROCESSOR = 2040;
                 }
 
+                //Special temp code for Sparkfun "Red Vision" board.
+                if(hiddenLines[1].includes('Red Vision')) {
+                    this.REDVISION = true;
+                }
+
                 if(window.latestMicroPythonVersionPlus != ""){
                     if(hiddenLines[4].includes(window.latestMicroPythonVersionPlus)){
                         window.MPversionPlus = true;
@@ -1440,7 +1448,9 @@ class ReplJS{
         if(this.isVersionNewer(window.latestMicroPythonVersion, info[0]) || window.MPversionPlus == false){
             // Need to update MicroPython
             //alert("Need to update Micropython")
-            await this.showMicropythonUpdate();
+            if(this.REDVISION == false){
+                await this.showMicropythonUpdate();
+            }
         }
 
         //if no library or the library is out of date
